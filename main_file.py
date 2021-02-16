@@ -1,7 +1,7 @@
 import numpy as np
 
 def main():
-    x=7
+    pass
 
 if __name__=='__main__':
     main()
