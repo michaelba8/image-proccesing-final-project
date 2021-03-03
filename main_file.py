@@ -7,8 +7,8 @@ path=pathlib.Path().absolute()
 
 def main():
     images=read_images(path)
-    #part_one(images)
-    part_two(images)
+    part_one(images)
+    #part_two(images)
 
 
 def part_two(images):
@@ -18,9 +18,10 @@ def part_two(images):
         color_img=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
         cut_img = cv2.bilateralFilter(img, 11, 150, 150)
         cut_img = cv2.Canny(cut_img, 50, 120)
-        dest_points=[]
-        #cv2.imshow('sd',np.hstack((cut_img,img)))
-        #cv2.waitKey()
+        #cut_img = cv2.bilateralFilter(img, 11, 150, 150)
+        #cut_img = cv2.Canny(cut_img, 30, 65)
+        cv2.imshow('sd',np.hstack((cut_img,img)))
+        cv2.waitKey()
         points=find_all_points(cut_img)
         point_7=find_7(cut_img)
         for i in range(points.shape[0]):
@@ -67,7 +68,7 @@ def find_closest_point(points,point1):
 
 
 def find_all_points(cut_img):
-    dst = cv2.goodFeaturesToTrack(cut_img, 200, 0.0001, 10)
+    dst = cv2.goodFeaturesToTrack(cut_img, 200, 0.0001, 30)
     dst = np.int0(dst[:, 0])
     return dst
 
@@ -154,8 +155,8 @@ def part_one(images):
     cut_images=[]
     for img in images:
         #temp = cv2.bilateralFilter(img,9,75,75)
-        temp=cv2.Canny(img,84,165)
-        #temp=cv2.Canny(temp,25,80)
+        temp=cv2.Canny(img,84,160)
+
 
         t1 = int(temp.shape[0] * 53 / 200)  # ~m*1/5
         t2=int((21*temp.shape[1])/30)   # ~n*2/3
@@ -167,6 +168,12 @@ def part_one(images):
         temp[t1:,t3:] = 0
         temp[:,t2:]=0
         temp[t4:t5,t6:]=0
+        points=find_all_points(temp)
+        for point in (points):
+            temp=cv2.circle(temp,(point[0],point[1]),2,255,2)
+        #temp=cv2.Canny(temp,25,80)
+        cv2.imshow('sd',temp)
+        cv2.waitKey()
 
         cut_images.append(temp)
         fin=fingers_detetction(img,temp)
@@ -184,8 +191,8 @@ def fingers_detetction(img,cut_img):
     circles = np.uint16(np.around(circles))
     circles[0,:,1]+=5
     np.delete(circles[0,:,:],5)
-    circles=check_validation(cut_img,circles[:,:6,:])
-    for i in circles[0,:5]:
+    #circles=check_validation(cut_img,circles[:,:,:])
+    for i in circles[0,:]:
         # draw the center of the circle
         cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
         #cv2.circle(cimg, (i[0], i[1]), 2, (255), 3)
